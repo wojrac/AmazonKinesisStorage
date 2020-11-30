@@ -6,7 +6,7 @@ MQTT_Broker = "test.mosquitto.org"
 MQTT_Port = 1883
 Keep_Alive_Interval = 45
 MQTT_Topic = "Home/BedRoom/#"
-#kinesis = boto3.client('kinesis')
+kinesis = boto3.client('kinesis', region_name='us-west-2')
 
 def on_connect(mosq,obj,flags,rc):
     mqttc.subscribe(MQTT_Topic,0)
@@ -15,17 +15,17 @@ def on_message(mosq,obj,msg):
     print("MQTT Data Received: ")
     print("MQTT Topic: " + msg.topic)
     print(msg.payload)
-    if msg.topic == "Home/BedRoom/DHT22_Temperature":
-        jsonData = msg.payload
-        json_Dict = json.loads(jsonData)
+   # if msg.topic == "Home/BedRoom/DHT22_Temperature":
+    jsonData = msg.payload
+    json_Dict = json.loads(jsonData)
         #SensorID - json_Dict['Sensor_ID']
-        json_Dict = json.dumps(json_Dict)
-        print(jsonDict)
-        #kinesis.put_record(
-        #    StreamName = "TemperatureStream"
-        #    Data = json_Dict
-        #    PartirionKey = "partitionkey"
-        #)
+    data = json.dumps(json_Dict)
+    print(data)
+    kinesis.put_record(
+        StreamName = "TemperatureStream",
+        Data = data,
+        PartitionKey = "partitionkey"
+        )
 def on_subscribe(mosq,obj,mid,granted_qos):
     pass
 mqttc = mqtt.Client()
