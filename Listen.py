@@ -6,7 +6,7 @@ MQTT_Broker = "test.mosquitto.org"
 MQTT_Port = 1883
 Keep_Alive_Interval = 45
 MQTT_Topic = "Home/BedRoom/#"
-kinesis = boto3.client('kinesis', region_name='us-west-2')
+kinesis = boto3.client('kinesis','us-east-1')
 
 def on_connect(mosq,obj,flags,rc):
     mqttc.subscribe(MQTT_Topic,0)
@@ -22,7 +22,7 @@ def on_message(mosq,obj,msg):
     data = json.dumps(json_Dict)
     print(data)
     kinesis.put_record(
-        StreamName = "TemperatureStream",
+        StreamName = "kinesis-analytics-demo-stream",
         Data = data,
         PartitionKey = "partitionkey"
         )
